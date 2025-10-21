@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KW Clarke Butchers Online Ordering</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #A30000; /* Deep Red for branding */
+            --secondary-color: #2D3748; /* Dark Gray for components */
+            --accent-color: #007BFF; /* Blue for admin highlights */
+            --light-color: #ffffff;
+            --text-light: #ffffff;
+            --text-dark: #1A202C;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --border-radius: 0.5rem;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F7FAFC;
+            margin: 0;
+            padding-bottom: 80px; /* Space for sticky footer */
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 1rem;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+        .logo-mark {
+            background-color: var(--text-light);
+            color: var(--primary-color);
+            padding: 0.2rem 0.6rem;
+            border-radius: var(--border-radius);
+            margin-right: 0.5rem;
+        }
+        
+        /* Utility */
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            border: 1px solid transparent;
+            text-align: center;
+        }
+        .btn:active {
+            transform: translateY(1px);
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+        .btn-primary:hover {
+            background-color: #7a0000;
+        }
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--text-light);
+        }
+        .btn-secondary:hover {
+            background-color: #1a202c;
+        }
+        .btn-outline {
+            background-color: transparent;
+            color: var(--text-light);
+            border-color: var(--text-light);
+        }
+        .btn-outline:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Product Cards */
+        .product-card {
+            background-color: var(--light-color);
+            border: 1px solid #E2E8F0;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        .product-name {
+            font-weight: 600;
+            font-size: 1.125rem;
+            margin-bottom: 0.25rem;
+        }
+        .product-price {
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+        .price-note {
+            font-size: 0.75rem;
+            color: #6B7280;
+            margin-top: 0.5rem;
+        }
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .input-group input {
+            width: 50px;
+            padding: 0.5rem;
+            text-align: center;
+            border: 1px solid #D1D5DB;
+            border-radius: var(--border-radius);
+        }
+        
+        /* Product Grid and Filters */
+        .filter-bar {
+            background-color: #ffffff;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            border: 1px solid #E2E8F0;
+        }
+        .grid-container {
+            display: grid;
+            gap: 1.5rem;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+        }
+        @media (min-width: 640px) { /* sm */
+            .grid-container {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .filter-bar {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .filter-bar input {
+                width: 50%;
+            }
+            .filter-bar select {
+                width: 30%;
+            }
+        }
+        @media (min-width: 1024px) { /* lg */
+            .grid-container {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+        
+        .filter-bar input, .filter-bar select {
+            padding: 0.6rem;
+            border: 1px solid #CBD5E0;
+            border-radius: var(--border-radius);
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        /* Footer/Cart */
+        .footer-cart {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--secondary-color);
+            color: var(--text-light);
+            padding: 0.75rem 1rem;
+            box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .footer-cart-details {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.75);
+            z-index: 150;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .modal-overlay:not(.hidden) {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+            width: 95%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 1.5rem;
+            position: relative;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #E2E8F0;
+            padding-bottom: 0.75rem;
+        }
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-dark);
+            padding: 0;
+            line-height: 1;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px dashed #E2E8F0;
+        }
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        .cart-item-name {
+            font-weight: 600;
+        }
+        .cart-total {
+            padding-top: 1rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-align: right;
+            border-top: 2px solid var(--secondary-color);
+            margin-top: 1rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #CBD5E0;
+            border-radius: var(--border-radius);
+            box-sizing: border-box;
+        }
+        
+        /* Auth Screen */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            background-color: var(--secondary-color);
+        }
+        .auth-card {
+            background-color: var(--light-color);
+            color: var(--text-dark);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 400px;
+        }
+        .auth-card h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--primary-color);
+        }
+        
+        /* Admin Panel */
+        .admin-view {
+            background-color: #fff;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #E2E8F0;
+        }
+        .admin-header {
+            background: linear-gradient(to right, var(--secondary-color), var(--accent-color));
+            color: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+        }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .admin-table th, .admin-table td {
+            padding: 0.75rem;
+            border: 1px solid #E2E8F0;
+            text-align: left;
+            vertical-align: top;
+        }
+        .admin-table th {
+            background-color: #F7FAFC;
+        }
+        .admin-table input[type="text"], .admin-table input[type="number"] {
+            padding: 0.4rem;
+            border: 1px solid #CBD5E0;
+            border-radius: var(--border-radius);
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        /* Order History & Admin Orders */
+        .order-card {
+            border: 1px solid #E2E8F0;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+            background-color: #fff;
+        }
+        .order-card h3 {
+            font-size: 1.25rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        .order-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 200;
+        }
+        .toast {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: opacity 0.5s, transform 0.5s;
+            opacity: 0;
+            transform: translateY(-20px);
+            min-width: 250px;
+            text-align: center;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Loading Overlay */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--light-color);
+            z-index: 300;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            transition: opacity 0.5s;
+            text-align: center;
+            padding: 1rem;
+        }
+        #loading-overlay-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: var(--primary-color);
+            animation: spin 1s ease infinite;
+            margin-bottom: 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Hidden Utility */
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Icon Symbol */
+        .icon {
+            font-size: 1.25rem;
+            line-height: 1;
+        }
+
+    </style>
+</head>
+<body>
+    
+    <div id="loading-overlay">
+        <div id="loading-overlay-content">
+            <div class="spinner"></div>
+            <span>Loading Butcher Shop...</span>
+        </div>
+    </div>
+
+    <div id="toast-container" class="toast-container"></div>
+    
+    <div id="auth-view" class="auth-container hidden"></div>
+
+    <header id="app-header" class="hidden">
+        <div class="header-content container">
+            <div class="logo">
+                <span class="logo-mark">MEAT</span>
+                <span>KW Clarke Butchers Ltd.</span>
+            </div>
+            <div id="auth-controls" style="display: flex; align-items: center; gap: 0.75rem;">
+                <span id="user-email-display" style="font-size: 0.9rem; margin-right: 1rem;"></span>
+                <button id="admin-panel-btn" class="btn btn-secondary hidden" onclick="changeView('admin')">Admin</button>
+                <button id="view-history-btn" class="btn btn-outline" onclick="changeView('history')">Order History</button>
+                <button class="btn btn-outline" onclick="signOut()">Sign Out</button>
+            </div>
+        </div>
+    </header>
+
+    <main id="app-main-content" class="container hidden">
+
+        <div id="products-view">
+            <div class="filter-bar">
+                <input type="text" id="search-input" placeholder="Search (e.g., Steak, Sausage)..." oninput="renderProducts()">
+                <select id="category-filter" onchange="renderProducts()">
+                    <option value="">Filter by Category</option>
+                </select>
+            </div>
+            <div id="product-list" class="grid-container"></div>
+        </div>
+        
+        <div id="admin-view" class="admin-view hidden"></div>
+        <div id="history-view" class="hidden"></div>
+    </main>
+
+    <div id="footer-cart" class="footer-cart hidden">
+        <div class="footer-cart-details">
+            Basket: <span id="cart-item-count">0</span> items | Total: <span id="cart-total-display">Â£0.00</span>
+        </div>
+        <button class="btn btn-primary" onclick="openCartModal()">View Basket & Checkout</button>
+    </div>
+
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div id="modal-content" class="modal-content"></div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signOut as firebaseSignOut
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            doc, 
+            getDoc,
+            getDocs,
+            setDoc,
+            addDoc,
+            updateDoc,
+            deleteDoc,
+            onSnapshot,
+            serverTimestamp,
+            query,
+            where,
+            writeBatch
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // ===================================================================================
+        //<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyCO9sau55bRLcyJyH6nMfHbZaRNizAT5dc",
+    authDomain: "kw-clarke-bf2cf.firebaseapp.com",
+    projectId: "kw-clarke-bf2cf",
+    storageBucket: "kw-clarke-bf2cf.firebasestorage.app",
+    messagingSenderId: "542877601753",
+    appId: "1:542877601753:web:e13408089fa3acbcedd3c8",
+    measurementId: "G-LZL6BY3K3G"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+        // ===================================================================================
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyCO9sau55bRLcyJyH6nMfHbZaRNizAT5dc",
+  authDomain: "kw-clarke-bf2cf.firebaseapp.com",
+  projectId: "kw-clarke-bf2cf",
+  storageBucket: "kw-clarke-bf2cf.firebasestorage.app",
+  messagingSenderId: "542877601753",
+  appId: "1:542877601753:web:e13408089fa3acbcedd3c8",
+  measurementId: "G-LZL6BY3K3G"
+};
+        };
+        // ===================================================================================
+
+        // --- Core Application State & Constants ---
+        const ADMIN_EMAIL = 'admin@clarke.com';
+        
+        let app, auth, db;
+        let currentUser = null; // Stores Firebase user object
+        let isAdmin = false;
+
+        let productData = []; // Local cache of products from Firestore
+        let categories = []; // Dynamically generated from products
+        let currentCart = {}; // Local cache of the user's cart
+        
+        // Unsubscribe functions for Firestore listeners to prevent memory leaks
+        let unsubscribeProducts = null;
+        let unsubscribeCart = null;
+        let unsubscribeHistory = null;
+        let unsubscribeAdminOrders = null;
+        
+        // --- Utility Functions ---
+        const formatCurrency = (amount) => `Â£${parseFloat(amount).toFixed(2)}`;
+
+        const showToast = (message, isError = false) => {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.style.backgroundColor = isError ? '#D32F2F' : '#4CAF50';
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => container.removeChild(toast), 500);
+            }, 3000);
+        };
+        
+        const showLoadingError = (title, message) => {
+            const loadingContent = document.getElementById('loading-overlay-content');
+            loadingContent.innerHTML = `
+                <h3 style="color: #D32F2F;">${title}</h3>
+                <p style="color: var(--text-dark); font-weight: 400; max-width: 500px;">${message}</p>
+            `;
+        };
+
+        // --- Product Data to be Seeded into Firestore ---
+        const rawProductData = [
+            { id: "mince-228g", name: 'Mince 228g', price: 3.15, category: 'Beef' },
+            { id: "fillet-steak", name: 'Fillet Steak', price: 55.20, category: 'Beef' },
+            { id: "scotch-egg", name: 'New Artisan Scotch Egg', price: 2.99, category: 'Prepared Meals & BBQ' },
+            { id: "quiche", name: 'Quiche', price: 3.49, category: 'Pies & Savoury' },
+            { id: "large-quiche", name: 'Large Quiche', price: 5.49, category: 'Pies & Savoury' },
+            { id: "gala-pie", name: 'Gala Pie', price: 14.75, category: 'Pies & Savoury' },
+            { id: "cheese-onion-pasty", name: 'Cheese and Onion Pasty', price: 2.99, category: 'Pies & Savoury' },
+            { id: "chicken-mushroom-pie", name: 'Chicken and Mushroom pie', price: 2.99, category: 'Pies & Savoury' },
+            { id: "minced-beef-pie", name: 'Minced Beef and Onion pie', price: 2.99, category: 'Pies & Savoury' },
+            { id: "steak-kidney-pie", name: 'Steak and Kidney Pie', price: 2.99, category: 'Pies & Savoury' },
+            { id: "traditional-pasty", name: 'Traditional Pasty', price: 2.99, category: 'Pies & Savoury' },
+            { id: "diced-steak-400g", name: 'Diced Steak 400g', price: 6.29, category: 'Beef' },
+            { id: "sausage-4s", name: 'Sausage 4s', price: 9.99, category: 'Sausages & Burgers' },
+            { id: "burgers-2x4oz", name: 'Burgers 2 x 4oz', price: 1.95, category: 'Sausages & Burgers' },
+            { id: "pork-sausages-1kg", name: 'Pork Sausages 1kg', price: 8.99, category: 'Sausages & Burgers' },
+            { id: "chipolatas", name: 'Chipolatas', price: 10.99, category: 'Sausages & Burgers' },
+            { id: "mince-steak-1kg", name: 'Mince Steak 1kg', price: 9.49, category: 'Beef' },
+            { id: "chicken-1.5kg", name: '1.5kg Chicken', price: 8.29, category: 'Poultry' },
+            { id: "bbq-chicken", name: 'BBQ Chicken', price: 8.49, category: 'Prepared Meals & BBQ' },
+            { id: "bbq-ribs", name: 'BBQ Ribs', price: 10.49, category: 'Prepared Meals & BBQ' },
+            { id: "chicken-fillets-1kg", name: 'Chicken Fillets 1kg', price: 10.99, category: 'Poultry' },
+            { id: "pork-loin-br", name: 'Pork Loin B&R', price: 9.90, category: 'Pork' },
+            { id: "belly-pork", name: 'Belly pork', price: 8.95, category: 'Pork' },
+            { id: "pork-chops-1s", name: 'Pork Chops 1s', price: 11.95, category: 'Pork' },
+            { id: "sliced-smoked-ham", name: 'Sliced Smoked Ham', price: 21.49, category: 'Deli Slices & Cured Meats' },
+            { id: "topside-beef", name: 'Topside', price: 16.95, category: 'Beef' },
+            { id: "smoked-bacon", name: 'Smoked Bacon', price: 3.89, category: 'Bacon & Gammon' },
+            { id: "unsmoked-bacon", name: 'Unsmoked Bacon', price: 3.89, category: 'Bacon & Gammon' },
+            { id: "sirloin-steak", name: 'Sirloin Steak', price: 32.95, category: 'Beef' },
+            { id: "gammon-steak", name: 'Gammon Steak', price: 13.74, category: 'Bacon & Gammon' },
+            { id: "leg-lamb", name: 'Leg Lamb', price: 11.94, category: 'Lamb' },
+            { id: "minced-lamb", name: 'Minced Lamb', price: 12.95, category: 'Lamb' },
+            { id: "rump-steak", name: 'Rump Steak', price: 25.54, category: 'Beef' },
+            { id: "lamb-shanks", name: 'Lamb Shanks', price: 8.99, category: 'Lamb' },
+            { id: "mature-cheese", name: 'Mature Cheese', price: 14.75, category: 'Misc' },
+            { id: "pork-pie", name: 'Pork Pie', price: 2.99, category: 'Pies & Savoury' },
+            { id: "sausage-rolls", name: 'Sausage Rolls', price: 2.99, category: 'Pies & Savoury' }
+        ];
+
+        const seedDatabase = async () => {
+            const productsRef = collection(db, 'products');
+            const snapshot = await getDocs(productsRef);
+            if (snapshot.empty) {
+                console.log("Product collection is empty. Seeding database...");
+                const batch = writeBatch(db);
+                rawProductData.forEach(product => {
+                    const docRef = doc(productsRef, product.id);
+                    batch.set(docRef, { 
+                        name: product.name, 
+                        price: product.price, 
+                        category: product.category 
+                    });
+                });
+                await batch.commit();
+                showToast("Database seeded with initial products.");
+            } else {
+                console.log("Product collection already exists. Skipping seed.");
+            }
+        };
+
+        // --- Firebase Authentication ---
+        const setupAuthListener = () => {
+            onAuthStateChanged(auth, async (user) => {
+                detachAllListeners();
+                if (user) {
+                    currentUser = user;
+                    isAdmin = user.email === ADMIN_EMAIL;
+                    document.getElementById('user-email-display').textContent = user.email;
+                    
+                    if (isAdmin) await seedDatabase();
+                    
+                    listenForProducts();
+                    listenForCart();
+
+                    document.getElementById('auth-view').classList.add('hidden');
+                    document.getElementById('app-header').classList.remove('hidden');
+                    document.getElementById('app-main-content').classList.remove('hidden');
+                    document.getElementById('admin-panel-btn').classList.toggle('hidden', !isAdmin);
+                    changeView('products');
+                } else {
+                    currentUser = null;
+                    isAdmin = false;
+                    document.getElementById('app-header').classList.add('hidden');
+                    document.getElementById('app-main-content').classList.add('hidden');
+                    document.getElementById('footer-cart').classList.add('hidden');
+                    document.getElementById('auth-view').classList.remove('hidden');
+                    showAuthView('sign-in');
+                }
+                // Hide loading screen only after auth state is resolved
+                setTimeout(() => {
+                    document.getElementById('loading-overlay').classList.add('hidden');
+                }, 200);
+            });
+        };
+        
+        window.signIn = async () => {
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+            if (!email || !password) return showToast('Please enter both email and password.', true);
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showToast(`Welcome back!`);
+            } catch (error) {
+                console.error("Sign-in error:", error.code, error.message);
+                showToast(`Sign-in failed: ${error.message}`, true);
+            }
+        };
+        
+        window.signUp = async () => {
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+            if (!email || password.length < 6) return showToast('Please enter a valid email and a password of 6+ characters.', true);
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                showToast('Account created successfully!');
+            } catch (error) {
+                console.error("Sign-up error:", error.code, error.message);
+                showToast(`Sign-up failed: ${error.message}`, true);
+            }
+        };
+
+        window.signOut = () => {
+            firebaseSignOut(auth).then(() => {
+                showToast("You've been signed out.");
+            }).catch(error => showToast(error.message, true));
+        };
+
+        window.showAuthView = (mode) => {
+            const authContainer = document.getElementById('auth-view');
+            const isSignIn = mode === 'sign-in';
+            const title = isSignIn ? 'Sign In to Order' : 'Create an Account';
+            const buttonText = isSignIn ? 'Sign In' : 'Sign Up';
+            const action = isSignIn ? 'signIn()' : 'signUp()';
+            const toggleLink = isSignIn 
+                ? `<a href="#" onclick="showAuthView('sign-up'); return false;" style="color: var(--primary-color);">Need an account? Sign up.</a>`
+                : `<a href="#" onclick="showAuthView('sign-in'); return false;" style="color: var(--primary-color);">Already have an account? Sign in.</a>`;
+
+            authContainer.innerHTML = `
+                <div class="auth-card">
+                    <h2>${title}</h2>
+                    <p style="text-align: center; color: #6B7280; margin-top: -1rem; margin-bottom: 1.5rem; font-size: 0.85rem;">
+                        Demo Admin: <strong>admin@clarke.com</strong><br>Password: <strong>password</strong>
+                    </p>
+                    <form onsubmit="event.preventDefault(); ${action};">
+                        <div class="form-group">
+                            <input type="email" id="auth-email" placeholder="Email" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <input type="password" id="auth-password" placeholder="Password (min 6 chars)" required minlength="6" class="form-control">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%">${buttonText}</button>
+                    </form>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        ${toggleLink}
+                    </div>
+                </div>
+            `;
+        };
+        
+        const detachAllListeners = () => {
+            if (unsubscribeProducts) unsubscribeProducts();
+            if (unsubscribeCart) unsubscribeCart();
+            if (unsubscribeHistory) unsubscribeHistory();
+            if (unsubscribeAdminOrders) unsubscribeAdminOrders();
+        };
+        
+        const listenForProducts = () => {
+            const productsRef = collection(db, "products");
+            unsubscribeProducts = onSnapshot(productsRef, (snapshot) => {
+                productData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderCategoryFilter();
+                renderProducts();
+            }, (error) => {
+                console.error("Error listening for products:", error);
+                showToast("Could not load products.", true);
+            });
+        };
+        
+        const listenForCart = () => {
+            if (!currentUser) return;
+            const cartRef = doc(db, 'carts', currentUser.uid);
+            unsubscribeCart = onSnapshot(cartRef, (doc) => {
+                currentCart = doc.exists() ? doc.data().items || {} : {};
+                updateFooter();
+                if (!document.getElementById('modal-overlay').classList.contains('hidden') && document.getElementById('checkout-form') === null) {
+                    openCartModal();
+                }
+            });
+        };
+        
+        window.updateCartItem = async (productId, quantity) => {
+            if (!currentUser) return;
+            const cartRef = doc(db, 'carts', currentUser.uid);
+            const product = productData.find(p => p.id === productId);
+            if (!product) return showToast('Error: Product not found.', true);
+        
+            const updatedItems = { ...currentCart };
+        
+            if (quantity <= 0) {
+                delete updatedItems[productId];
+            } else {
+                updatedItems[productId] = { 
+                    name: product.name, 
+                    price: product.price, 
+                    quantity: quantity 
+                };
+            }
+        
+            try {
+                await setDoc(cartRef, { items: updatedItems }, { merge: true });
+            } catch (error) {
+                console.error("Error updating cart:", error);
+                showToast("Could not update basket.", true);
+            }
+        };
+
+        window.renderProducts = () => {
+            const container = document.getElementById('product-list');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            const searchText = document.getElementById('search-input').value.toLowerCase();
+            const selectedCategory = document.getElementById('category-filter').value;
+
+            const filteredProducts = productData.filter(p => {
+                const matchesSearch = p.name.toLowerCase().includes(searchText);
+                const matchesCategory = selectedCategory === '' || p.category === selectedCategory;
+                return matchesSearch && matchesCategory;
+            }).sort((a,b) => a.name.localeCompare(b.name));
+
+            filteredProducts.forEach(product => {
+                const currentQuantity = currentCart[product.id] ? currentCart[product.id].quantity : 0;
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                
+                let priceDisplay = formatCurrency(product.price);
+                let priceNote = '';
+                let disabledAttr = '';
+                
+                if (product.price === 0.00) {
+                    priceDisplay = 'Priced by Weight';
+                    priceNote = '<p class="price-note">Please check for final price.</p>';
+                    disabledAttr = 'disabled';
+                }
+
+                const actionButton = `
+                    <div class="input-group">
+                        <button class="btn btn-secondary" onclick="changeQuantity('${product.id}', ${currentQuantity - 1})" ${disabledAttr}>-</button>
+                        <input type="number" id="qty-${product.id}" value="${currentQuantity}" min="0" onchange="changeQuantityFromInput('${product.id}')" class="form-control" ${disabledAttr}>
+                        <button class="btn btn-secondary" onclick="changeQuantity('${product.id}', ${currentQuantity + 1})" ${disabledAttr}>+</button>
+                    </div>
+                `;
+
+                card.innerHTML = `
+                    <div>
+                        <p class="product-name">${product.name}</p>
+                        <p class="product-price">${priceDisplay}</p>
+                        ${priceNote}
+                    </div>
+                    ${actionButton}
+                `;
+                container.appendChild(card);
+            });
+
+            if (filteredProducts.length === 0) {
+                 container.innerHTML = '<p style="text-align: center; padding: 2rem;">No products found.</p>';
+            }
+        };
+        
+        window.changeQuantity = (productId, newQuantity) => {
+            const finalQuantity = Math.max(0, newQuantity);
+            updateCartItem(productId, finalQuantity);
+        };
+        
+        window.changeQuantityFromInput = (productId) => {
+            const qtyInput = document.getElementById(`qty-${productId}`);
+            let newQuantity = parseInt(qtyInput.value) || 0;
+            newQuantity = Math.max(0, newQuantity);
+            qtyInput.value = newQuantity;
+            updateCartItem(productId, newQuantity);
+        };
+        
+        window.openCartModal = () => {
+             const items = Object.keys(currentCart).map(id => ({...currentCart[id], id})).filter(item => item.quantity > 0);
+            const totalPrice = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            let cartListHTML = items.length === 0 
+                ? '<p>Your basket is empty.</p>'
+                : items.map(item => `
+                    <div class="cart-item">
+                        <span class="cart-item-name">${item.name}</span>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span>${item.quantity} x ${formatCurrency(item.price)}</span>
+                            <span style="font-weight: 700; min-width: 60px; text-align: right;">${formatCurrency(item.price * item.quantity)}</span>
+                            <button class="btn" style="background: none; color: var(--primary-color); padding: 0;" onclick="updateCartItem('${item.id}', 0)">
+                                <span class="icon">Ã—</span>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            
+            openModal(`
+                <div class="modal-header">
+                    <h2>Your Basket</h2>
+                    <button class="modal-close-btn" onclick="closeModal()">Ã—</button>
+                </div>
+                <div>${cartListHTML}</div>
+                ${items.length > 0 ? `
+                    <p class="cart-total">Total: ${formatCurrency(totalPrice)}</p>
+                    <div style="margin-top: 1.5rem; text-align: right;">
+                        <button class="btn btn-primary" onclick="proceedToCheckout()">Proceed to Checkout</button>
+                    </div>
+                ` : ''}
+            `);
+        };
+        
+        window.submitOrder = async () => {
+            const form = document.getElementById('checkout-form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const items = Object.keys(currentCart).map(id => ({ ...currentCart[id], id })).filter(item => item.quantity > 0);
+            if (items.length === 0) return showToast('Your basket is empty!', true);
+
+            const newOrder = {
+                userId: currentUser.uid,
+                userEmail: currentUser.email,
+                createdAt: serverTimestamp(),
+                customer: {
+                    name: document.getElementById('name').value,
+                    phone: document.getElementById('phone').value,
+                    address: document.getElementById('address').value,
+                    notes: document.getElementById('notes').value
+                },
+                items: items,
+                total: items.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+                status: "Submitted"
+            };
+
+            try {
+                await addDoc(collection(db, 'orders'), newOrder);
+                await setDoc(doc(db, 'carts', currentUser.uid), { items: {} });
+                closeModal();
+                showToast('Order submitted successfully! We will be in touch shortly.');
+            } catch (error) {
+                console.error("Error submitting order:", error);
+                showToast("Failed to submit order. Please try again.", true);
+            }
+        };
+        
+        const initApp = () => {
+             // NEW: Check if the Firebase config is still the placeholder
+            if (firebaseConfig.apiKey.startsWith("PASTE_YOUR")) {
+                showLoadingError(
+                    "Configuration Missing",
+                    "This application is not connected to Firebase. Please follow the instructions in the code to add your Firebase project's configuration object to the 'firebaseConfig' variable."
+                );
+                return; // Stop the app from initializing further
+            }
+            
+            try {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                setupAuthListener();
+            } catch (e) {
+                console.error("Firebase initialization failed:", e);
+                showLoadingError(
+                    "Initialization Failed",
+                    `Could not connect to Firebase services. Please check that your configuration is correct and that the services are enabled in your Firebase console. Error: ${e.message}`
+                );
+            }
+        };
+
+        initApp();
+        
+        // --- Globally expose functions needed by HTML event handlers ---
+        window.openModal = (contentHTML) => {
+            document.getElementById('modal-content').innerHTML = contentHTML;
+            document.getElementById('modal-overlay').classList.remove('hidden');
+        };
+
+        window.closeModal = () => {
+            document.getElementById('modal-overlay').classList.add('hidden');
+        };
+        
+        window.renderCategoryFilter = () => {
+            categories = [...new Set(productData.map(p => p.category))].sort();
+            const select = document.getElementById('category-filter');
+            if (!select) return;
+            const selectedValue = select.value;
+            select.innerHTML = '<option value="">Filter by Category</option>';
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                select.appendChild(option);
+            });
+            select.value = selectedValue;
+        };
+
+        window.updateFooter = () => {
+            const footer = document.getElementById('footer-cart');
+            if (!currentUser || !footer) return;
+            
+            const items = Object.values(currentCart);
+            if(items.length === 0) {
+                 footer.classList.add('hidden');
+                 return;
+            }
+            footer.classList.remove('hidden');
+
+            const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+            const totalPrice = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            document.getElementById('cart-item-count').textContent = totalItems;
+            document.getElementById('cart-total-display').textContent = formatCurrency(totalPrice);
+        };
+        
+        window.changeView = (viewName) => {
+            document.getElementById('products-view').classList.add('hidden');
+            document.getElementById('admin-view').classList.add('hidden');
+            document.getElementById('history-view').classList.add('hidden');
+            document.getElementById('footer-cart').classList.add('hidden');
+            
+            if (viewName === 'products') {
+                document.getElementById('products-view').classList.remove('hidden');
+                if(Object.values(currentCart).length > 0) {
+                    document.getElementById('footer-cart').classList.remove('hidden');
+                }
+            } else if (viewName === 'admin') {
+                document.getElementById('admin-view').classList.remove('hidden');
+                renderAdminView('products');
+            } else if (viewName === 'history') {
+                document.getElementById('history-view').classList.remove('hidden');
+                listenForHistory();
+            }
+        };
+
+        window.proceedToCheckout = () => {
+            const checkoutFormHTML = `
+                <div class="modal-header">
+                    <h2>Checkout Details</h2>
+                    <button class="modal-close-btn" onclick="openCartModal()">â† Back to Basket</button>
+                </div>
+                <form id="checkout-form" onsubmit="event.preventDefault(); submitOrder();">
+                    <div class="form-group"><label for="name">Full Name</label><input type="text" id="name" required></div>
+                    <div class="form-group"><label for="phone">Phone Number</label><input type="tel" id="phone" required></div>
+                    <div class="form-group"><label for="address">Delivery Address / Collection Note</label><textarea id="address" required rows="3"></textarea></div>
+                    <div class="form-group"><label for="notes">Special Notes</label><textarea id="notes" rows="3"></textarea></div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Order</button>
+                </form>
+            `;
+            openModal(checkoutFormHTML);
+        };
+        
+        const listenForHistory = () => {
+            if (!currentUser) return;
+            if (unsubscribeHistory) unsubscribeHistory();
+            const q = query(collection(db, "orders"), where("userId", "==", currentUser.uid));
+            unsubscribeHistory = onSnapshot(q, (querySnapshot) => {
+                const history = [];
+                querySnapshot.forEach((doc) => {
+                    history.push({ id: doc.id, ...doc.data() });
+                });
+                renderHistory(history);
+            });
+        };
+        
+        const renderHistory = (history) => {
+            history.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+            
+            let historyHTML = `
+                <h2 style="font-size: 1.75rem; margin-bottom: 1.5rem;">Your Order History</h2>
+                <button class="btn btn-secondary" onclick="changeView('products')">â† Back to Products</button>
+                <div class="order-card-grid" style="margin-top: 1.5rem;">
+            `;
+
+            if (history.length === 0) {
+                historyHTML += '<p>You have no past orders.</p>';
+            } else {
+                history.forEach(order => {
+                    historyHTML += `
+                        <div class="order-card">
+                            <h3>Order Placed: ${order.createdAt.toDate().toLocaleDateString()}</h3>
+                            <p><strong>Status:</strong> ${order.status}</p>
+                            <p><strong>Total:</strong> ${formatCurrency(order.total)}</p>
+                            <button class="btn btn-secondary" style="margin-top: 0.5rem;" onclick="viewOrderDetail('${order.id}', false)">View Details</button>
+                        </div>
+                    `;
+                });
+            }
+            historyHTML += '</div>';
+            document.getElementById('history-view').innerHTML = historyHTML;
+        };
+
+        window.viewOrderDetail = async (orderId, isAdminView = false) => {
+            try {
+                const orderRef = doc(db, 'orders', orderId);
+                const orderSnap = await getDoc(orderRef);
+                if (!orderSnap.exists()) return showToast("Order not found.", true);
+                
+                const order = orderSnap.data();
+                const itemDetails = order.items.map(item => `
+                    <div class="cart-item">
+                        <span>${item.quantity} x ${item.name}</span>
+                        <span>${formatCurrency(item.price * item.quantity)}</span>
+                    </div>
+                `).join('');
+
+                openModal(`
+                    <div class="modal-header">
+                        <h2>Order Details</h2>
+                        <button class="modal-close-btn" onclick="closeModal()">Ã—</button>
+                    </div>
+                    <p><strong>Customer:</strong> ${order.customer.name}</p>
+                    <p><strong>Contact:</strong> ${order.customer.phone} | ${order.userEmail}</p>
+                    <p><strong>Address/Note:</strong> ${order.customer.address}</p>
+                    ${order.customer.notes ? `<p><strong>Special Notes:</strong> ${order.customer.notes}</p>` : ''}
+                    <h3 style="margin-top: 1.5rem; border-top: 1px solid #E2E8F0; padding-top: 1rem;">Items:</h3>
+                    <div>${itemDetails}</div>
+                    <p class="cart-total">Total: ${formatCurrency(order.total)}</p>
+                `);
+            } catch (error) {
+                console.error("Error fetching order details:", error);
+                showToast("Could not load order details.", true);
+            }
+        };
+
+        // ADMIN FUNCTIONS
+        window.renderAdminView = (subView) => {
+            const adminContainer = document.getElementById('admin-view');
+            adminContainer.innerHTML = `
+                <div class="admin-header">
+                    <h2 style="font-size: 1.75rem; margin:0;">Admin Dashboard</h2>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; border-bottom: 1px solid #ccc; padding-bottom: 1.5rem;">
+                    <button class="btn btn-primary" onclick="changeView('products')">â† Back to Shop</button>
+                    <button class="btn btn-secondary" onclick="renderAdminView('products')">Manage Products</button>
+                    <button class="btn btn-secondary" onclick="renderAdminView('orders')">View Orders</button>
+                </div>
+                <div id="admin-subview"></div>
+            `;
+
+            if (subView === 'products') {
+                renderAdminProducts();
+            } else if (subView === 'orders') {
+                listenForAdminOrders();
+            }
+        };
+
+        const renderAdminProducts = () => {
+            const container = document.getElementById('admin-subview');
+            let tableRows = productData.sort((a,b) => a.name.localeCompare(b.name)).map(p => `
+                <tr>
+                    <td>${p.name}</td>
+                    <td>${p.category}</td>
+                    <td>${formatCurrency(p.price)}</td>
+                    <td>
+                        <button class="btn btn-secondary" onclick="openProductForm('${p.id}')">Edit</button>
+                        <button class="btn btn-primary" onclick="deleteProduct('${p.id}')">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            container.innerHTML = `
+                <h3 style="margin-top:0;">Manage Products</h3>
+                <button class="btn btn-primary" onclick="openProductForm()">+ Add New Product</button>
+                <div style="max-height: 60vh; overflow-y: auto; margin-top: 1rem;">
+                <table class="admin-table">
+                    <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Actions</th></tr></thead>
+                    <tbody>${tableRows}</tbody>
+                </table>
+                </div>
+            `;
+        };
+        
+        const listenForAdminOrders = () => {
+            if (unsubscribeAdminOrders) unsubscribeAdminOrders();
+            const ordersRef = collection(db, "orders");
+            unsubscribeAdminOrders = onSnapshot(ordersRef, (snapshot) => {
+                const allOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderAdminOrders(allOrders);
+            });
+        };
+
+        const renderAdminOrders = (orders) => {
+            orders.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+            const container = document.getElementById('admin-subview');
+            let orderCards = orders.map(order => `
+                <div class="order-card">
+                    <h3>${order.customer.name} <span style="font-size:0.8rem;color:#666">(${order.createdAt.toDate().toLocaleString()})</span></h3>
+                    <p><strong>Contact:</strong> ${order.userEmail}</p>
+                    <p><strong>Total:</strong> ${formatCurrency(order.total)}</p>
+                    <p><strong>Status:</strong> ${order.status}</p>
+                    <button class="btn btn-secondary" onclick="viewOrderDetail('${order.id}', true)">View Details</button>
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                <h3 style="margin-top:0;">All Customer Orders</h3>
+                <div class="order-card-grid">${orderCards.length > 0 ? orderCards : '<p>No orders have been placed yet.</p>'}</div>
+            `;
+        };
+        
+        window.openProductForm = (productId = null) => {
+            const isEdit = productId !== null;
+            const product = isEdit ? productData.find(p => p.id === productId) : { name: '', category: '', price: 0.00 };
+            if (isEdit && !product) return showToast("Product not found.", true);
+
+            const categoryOptions = categories.map(cat => `<option value="${cat}" ${cat === product.category ? 'selected' : ''}>${cat}</option>`).join('');
+
+            openModal(`
+                <div class="modal-header"><h2>${isEdit ? 'Edit Product' : 'Add New Product'}</h2><button class="modal-close-btn" onclick="closeModal()">Ã—</button></div>
+                <form id="product-form" onsubmit="event.preventDefault(); submitProductForm('${productId}');">
+                    <div class="form-group"><label>Product Name</label><input type="text" id="form-name" value="${product.name}" required></div>
+                    <div class="form-group"><label>Category</label><select id="form-category">${categoryOptions}</select><input type="text" id="new-category" placeholder="Or type a new category"></div>
+                    <div class="form-group"><label>Price (Â£)</label><input type="number" step="0.01" id="form-price" value="${product.price}" required></div>
+                    <button type="submit" class="btn btn-primary" style="width:100%">${isEdit ? 'Save Changes' : 'Add Product'}</button>
+                </form>
+            `);
+        };
+
+        window.submitProductForm = async (productId) => {
+            const isEdit = productId !== 'null';
+            const name = document.getElementById('form-name').value.trim();
+            let category = document.getElementById('new-category').value.trim() || document.getElementById('form-category').value;
+            const price = parseFloat(document.getElementById('form-price').value);
+
+            if (!name || !category || isNaN(price)) return showToast('Please fill all fields.', true);
+            
+            const productPayload = { name, category, price };
+
+            try {
+                if (isEdit) {
+                    await setDoc(doc(db, 'products', productId), productPayload);
+                    showToast("Product updated.");
+                } else {
+                    // For adding, Firestore will generate an ID automatically
+                    await addDoc(collection(db, 'products'), productPayload);
+                    showToast("Product added.");
+                }
+                closeModal();
+            } catch (error) {
+                console.error("Error saving product:", error);
+                showToast("Could not save product.", true);
+            }
+        };
+
+        window.deleteProduct = async (productId) => {
+            if (confirm("Are you sure you want to delete this product? This cannot be undone.")) {
+                try {
+                    await deleteDoc(doc(db, 'products', productId));
+                    showToast("Product deleted.");
+                } catch (error) {
+                    console.error("Error deleting product:", error);
+                    showToast("Could not delete product.", true);
+                }
+            }
+        };
+
+    </script>
+</body>
+</html>
