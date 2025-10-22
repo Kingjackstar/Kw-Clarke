@@ -61,6 +61,41 @@
             margin-right: 0.5rem;
         }
         
+        /* NEW Navigation Bar Styling */
+        #nav-bar {
+            background-color: var(--light-color);
+            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 50px; /* Position right below the header (approx 50px high) */
+            z-index: 40;
+            padding: 0.5rem 0; /* Add vertical padding for separation */
+        }
+        #auth-controls {
+            display: flex; 
+            align-items: center; 
+            justify-content: flex-end;
+            flex-wrap: nowrap;
+            gap: 0.5rem;
+            padding: 0 1rem; /* Ensure padding matches container */
+        }
+        #auth-controls .btn {
+            padding: 0.35rem 0.75rem;
+            font-size: 0.875rem;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--light-color);
+            border: none;
+        }
+        .btn-secondary {
+             background-color: #E2E8F0;
+             color: var(--text-dark);
+             border: 1px solid #CBD5E0;
+        }
+        .btn-secondary:hover {
+            background-color: #CBD5E0;
+        }
+        
         /* Utility */
         .btn {
             padding: 0.5rem 1rem;
@@ -74,27 +109,17 @@
         .btn:active {
             transform: translateY(1px);
         }
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: var(--text-light);
-        }
         .btn-primary:hover {
             background-color: #7a0000;
         }
-        .btn-secondary {
-            background-color: var(--secondary-color);
-            color: var(--text-light);
-        }
-        .btn-secondary:hover {
-            background-color: #1a202c;
-        }
+        
         .btn-outline {
             background-color: transparent;
-            color: var(--text-light);
-            border-color: var(--text-light);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
         }
         .btn-outline:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(163, 0, 0, 0.1);
         }
         
         /* Product Cards */
@@ -472,14 +497,23 @@
                 <span class="logo-mark">MEAT</span>
                 <span>KW Clarke Butchers Ltd.</span>
             </div>
-            <div id="auth-controls" style="display: flex; align-items: center; gap: 0.75rem;">
-                <span id="user-email-display" style="font-size: 0.9rem; margin-right: 1rem;"></span>
-                <button id="admin-panel-btn" class="btn btn-secondary hidden" onclick="changeView('admin')">Admin</button>
-                <button id="view-history-btn" class="btn btn-outline" onclick="changeView('history')">Order History</button>
-                <button class="btn btn-outline" onclick="signOut()">Sign Out</button>
-            </div>
+            <!-- The auth controls are now in the nav-bar below -->
         </div>
     </header>
+    
+    <!-- NEW NAVIGATION BAR -->
+    <nav id="nav-bar" class="hidden">
+        <div id="auth-controls" class="container">
+            <!-- Content will be injected here by JS on successful login -->
+            <span id="user-email-display" style="font-size: 0.9rem; white-space: nowrap;"></span>
+                
+            <button id="admin-panel-btn" class="btn btn-secondary hidden" onclick="changeView('admin')">Admin</button>
+            
+            <button id="view-history-btn" class="btn btn-outline" onclick="changeView('history')">History</button>
+            
+            <button class="btn btn-primary" onclick="signOut()">Sign Out</button>
+        </div>
+    </nav>
 
     <main id="app-main-content" class="container hidden">
 
@@ -499,7 +533,7 @@
 
     <div id="footer-cart" class="footer-cart hidden">
         <div class="footer-cart-details">
-            Basket: <span id="cart-item-count">0</span> items | Total: <span id="cart-total-display">Â£0.00</span>
+            Basket: <span id="cart-item-count">0</span> items | Total: <span id="cart-total-display">£0.00</span>
         </div>
         <button class="btn btn-primary" onclick="openCartModal()">View Basket & Checkout</button>
     </div>
@@ -517,7 +551,8 @@
             onAuthStateChanged,
             createUserWithEmailAndPassword,
             signInWithEmailAndPassword,
-            signOut as firebaseSignOut
+            signOut as firebaseSignOut,
+            signInAnonymously // Used for initial session
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { 
             getFirestore, 
@@ -532,60 +567,26 @@
             onSnapshot,
             serverTimestamp,
             query,
-            where,
             writeBatch
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        // ===================================================================================
-        //<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
- // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyCO9sau55bRLcyJyH6nMfHbZaRNizAT5dc",
-  authDomain: "kw-clarke-bf2cf.firebaseapp.com",
-  projectId: "kw-clarke-bf2cf",
-  storageBucket: "kw-clarke-bf2cf.firebasestorage.app",
-  messagingSenderId: "542877601753",
-  appId: "1:542877601753:web:e13408089fa3acbcedd3c8",
-  measurementId: "G-LZL6BY3K3G"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
-        // ===================================================================================
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyCO9sau55bRLcyJyH6nMfHbZaRNizAT5dc",
-  authDomain: "kw-clarke-bf2cf.firebaseapp.com",
-  projectId: "kw-clarke-bf2cf",
-  storageBucket: "kw-clarke-bf2cf.firebasestorage.app",
-  messagingSenderId: "542877601753",
-  appId: "1:542877601753:web:e13408089fa3acbcedd3c8",
-  measurementId: "G-LZL6BY3K3G"
-};
+        // ------------------------------------------------------------------------------------------------
+        // !!! FIREBASE CONFIGURATION - INSERTED FROM USER INPUT !!!
+        // ------------------------------------------------------------------------------------------------
+        // This configuration is unique to the kw-clarke-butchers-8fcb1 project.
+        const firebaseConfig = {
+            apiKey: "AIzaSyBcaLhgQfDv5dzs_Vtc0BBDmor9AiAz7hM", 
+            authDomain: "kw-clarke-butchers-8fcb1.firebaseapp.com",
+            projectId: "kw-clarke-butchers-8fcb1",
+            storageBucket: "kw-clarke-butchers-8fcb1.firebasestorage.app",
+            messagingSenderId: "1011057173441",
+            appId: "1:1011057173441:web:fe400b5034fade0fd20540"
         };
-        // ===================================================================================
-
+        
+        const isPlaceholderConfig = false; // Set to false now that keys are present
+        
         // --- Core Application State & Constants ---
-        const ADMIN_EMAIL = 'admin@clarke.com';
+        const ADMIN_EMAIL = 'admin@clarke.com'; // Admin account for product/order management
         
         let app, auth, db;
         let currentUser = null; // Stores Firebase user object
@@ -601,8 +602,17 @@ const firebaseConfig = {
         let unsubscribeHistory = null;
         let unsubscribeAdminOrders = null;
         
+        // --- Firestore Path Helpers (Using simplified flat structure for production) ---
+        const getPublicCollectionRef = (collectionName) => collection(db, collectionName); // e.g., /products
+        
+        const getUserCollectionRef = (collectionName) => {
+            // Standard path: /users/{uid}/collectionName
+            return collection(db, 'users', currentUser.uid, collectionName); 
+        };
+        const getUserDocRef = (collectionName, docId) => doc(getUserCollectionRef(collectionName), docId);
+        
         // --- Utility Functions ---
-        const formatCurrency = (amount) => `Â£${parseFloat(amount).toFixed(2)}`;
+        const formatCurrency = (amount) => `£${parseFloat(amount).toFixed(2)}`;
 
         const showToast = (message, isError = false) => {
             const container = document.getElementById('toast-container');
@@ -624,6 +634,7 @@ const firebaseConfig = {
                 <h3 style="color: #D32F2F;">${title}</h3>
                 <p style="color: var(--text-dark); font-weight: 400; max-width: 500px;">${message}</p>
             `;
+            document.getElementById('loading-overlay').classList.remove('hidden');
         };
 
         // --- Product Data to be Seeded into Firestore ---
@@ -668,13 +679,15 @@ const firebaseConfig = {
         ];
 
         const seedDatabase = async () => {
-            const productsRef = collection(db, 'products');
+            // Using /products collection
+            const productsRef = getPublicCollectionRef('products'); 
             const snapshot = await getDocs(productsRef);
+            
             if (snapshot.empty) {
                 console.log("Product collection is empty. Seeding database...");
                 const batch = writeBatch(db);
                 rawProductData.forEach(product => {
-                    const docRef = doc(productsRef, product.id);
+                    const docRef = doc(productsRef, product.id); 
                     batch.set(docRef, { 
                         name: product.name, 
                         price: product.price, 
@@ -692,25 +705,41 @@ const firebaseConfig = {
         const setupAuthListener = () => {
             onAuthStateChanged(auth, async (user) => {
                 detachAllListeners();
+
                 if (user) {
+                    console.log("AUTH: User logged in. UID:", user.uid);
+
+                    // Admin is the specified email user
+                    isAdmin = (user.email === ADMIN_EMAIL);
+
                     currentUser = user;
-                    isAdmin = user.email === ADMIN_EMAIL;
-                    document.getElementById('user-email-display').textContent = user.email;
+                    document.getElementById('user-email-display').textContent = user.email || 'Guest';
                     
-                    if (isAdmin) await seedDatabase();
+                    // Show UI elements
+                    document.getElementById('auth-view').classList.add('hidden');
+                    document.getElementById('auth-view').innerHTML = '';
+                    
+                    document.getElementById('app-header').classList.remove('hidden');
+                    document.getElementById('nav-bar').classList.remove('hidden');
+                    document.getElementById('app-main-content').classList.remove('hidden');
+                    document.getElementById('app-main-content').style.display = 'block'; 
+                    
+                    // Seed product data if necessary (only needs to happen once)
+                    if (isAdmin) {
+                        await seedDatabase(); 
+                    }
                     
                     listenForProducts();
                     listenForCart();
 
-                    document.getElementById('auth-view').classList.add('hidden');
-                    document.getElementById('app-header').classList.remove('hidden');
-                    document.getElementById('app-main-content').classList.remove('hidden');
                     document.getElementById('admin-panel-btn').classList.toggle('hidden', !isAdmin);
                     changeView('products');
+
                 } else {
                     currentUser = null;
                     isAdmin = false;
                     document.getElementById('app-header').classList.add('hidden');
+                    document.getElementById('nav-bar').classList.add('hidden');
                     document.getElementById('app-main-content').classList.add('hidden');
                     document.getElementById('footer-cart').classList.add('hidden');
                     document.getElementById('auth-view').classList.remove('hidden');
@@ -726,13 +755,18 @@ const firebaseConfig = {
         window.signIn = async () => {
             const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-password').value;
+            
             if (!email || !password) return showToast('Please enter both email and password.', true);
+
             try {
+                // Must ensure user is signed out first to avoid token conflicts
+                if (auth.currentUser) await firebaseSignOut(auth);
+                
                 await signInWithEmailAndPassword(auth, email, password);
                 showToast(`Welcome back!`);
             } catch (error) {
                 console.error("Sign-in error:", error.code, error.message);
-                showToast(`Sign-in failed: ${error.message}`, true);
+                showToast(`Sign-in failed: ${error.message}. Please sign up if you do not have an account.`, true);
             }
         };
         
@@ -742,7 +776,7 @@ const firebaseConfig = {
             if (!email || password.length < 6) return showToast('Please enter a valid email and a password of 6+ characters.', true);
             try {
                 await createUserWithEmailAndPassword(auth, email, password);
-                showToast('Account created successfully!');
+                showToast('Account created successfully! Please sign in.');
             } catch (error) {
                 console.error("Sign-up error:", error.code, error.message);
                 showToast(`Sign-up failed: ${error.message}`, true);
@@ -769,7 +803,7 @@ const firebaseConfig = {
                 <div class="auth-card">
                     <h2>${title}</h2>
                     <p style="text-align: center; color: #6B7280; margin-top: -1rem; margin-bottom: 1.5rem; font-size: 0.85rem;">
-                        Demo Admin: <strong>admin@clarke.com</strong><br>Password: <strong>password</strong>
+                        Admin access is tied to the email: <strong>${ADMIN_EMAIL}</strong>
                     </p>
                     <form onsubmit="event.preventDefault(); ${action};">
                         <div class="form-group">
@@ -778,7 +812,8 @@ const firebaseConfig = {
                         <div class="form-group">
                             <input type="password" id="auth-password" placeholder="Password (min 6 chars)" required minlength="6" class="form-control">
                         </div>
-                        <button type="submit" class="btn btn-primary" style="width:100%">${buttonText}</button>
+                        
+                        <button type="submit" class="btn btn-primary" style="width:100%; margin-top: 1rem;">${buttonText}</button>
                     </form>
                     <div style="text-align: center; margin-top: 1rem;">
                         ${toggleLink}
@@ -795,20 +830,22 @@ const firebaseConfig = {
         };
         
         const listenForProducts = () => {
-            const productsRef = collection(db, "products");
+            // Public collection: /products
+            const productsRef = getPublicCollectionRef('products');
             unsubscribeProducts = onSnapshot(productsRef, (snapshot) => {
                 productData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderCategoryFilter();
                 renderProducts();
             }, (error) => {
                 console.error("Error listening for products:", error);
-                showToast("Could not load products.", true);
+                showToast("Could not load products. Check console for database rules error.", true);
             });
         };
         
         const listenForCart = () => {
             if (!currentUser) return;
-            const cartRef = doc(db, 'carts', currentUser.uid);
+            // Private collection: /users/{uid}/cart/current
+            const cartRef = doc(getUserCollectionRef('cart'), 'current');
             unsubscribeCart = onSnapshot(cartRef, (doc) => {
                 currentCart = doc.exists() ? doc.data().items || {} : {};
                 updateFooter();
@@ -820,7 +857,7 @@ const firebaseConfig = {
         
         window.updateCartItem = async (productId, quantity) => {
             if (!currentUser) return;
-            const cartRef = doc(db, 'carts', currentUser.uid);
+            const cartRef = doc(getUserCollectionRef('cart'), 'current');
             const product = productData.find(p => p.id === productId);
             if (!product) return showToast('Error: Product not found.', true);
         
@@ -837,10 +874,10 @@ const firebaseConfig = {
             }
         
             try {
-                await setDoc(cartRef, { items: updatedItems }, { merge: true });
+                await setDoc(cartRef, { items: updatedItems }, { merge: false });
             } catch (error) {
                 console.error("Error updating cart:", error);
-                showToast("Could not update basket.", true);
+                showToast("Could not update basket. Check console for database rules error.", true);
             }
         };
 
@@ -870,7 +907,6 @@ const firebaseConfig = {
                 if (product.price === 0.00) {
                     priceDisplay = 'Priced by Weight';
                     priceNote = '<p class="price-note">Please check for final price.</p>';
-                    disabledAttr = 'disabled';
                 }
 
                 const actionButton = `
@@ -893,7 +929,18 @@ const firebaseConfig = {
             });
 
             if (filteredProducts.length === 0) {
-                 container.innerHTML = '<p style="text-align: center; padding: 2rem;">No products found.</p>';
+                 let message = '<p style="text-align: center; padding: 2rem;">No products found matching your filter/search criteria.</p>';
+                 
+                 if (productData.length === 0) {
+                     message = `
+                         <div style="text-align: center; padding: 2rem; border: 2px solid var(--primary-color); border-radius: var(--border-radius); margin-top: 2rem; background-color: #ffebeb;">
+                             <h4 style="color: var(--primary-color); font-weight: 700;">Product Database Empty</h4>
+                             <p>Please sign in with the **Admin** account (${ADMIN_EMAIL}) to automatically load the initial inventory, or add products manually via the Admin Dashboard.</p>
+                         </div>
+                     `;
+                 }
+                 
+                 container.innerHTML = message;
             }
         };
         
@@ -910,6 +957,31 @@ const firebaseConfig = {
             updateCartItem(productId, newQuantity);
         };
         
+        window.openModal = (contentHTML) => {
+            document.getElementById('modal-content').innerHTML = contentHTML;
+            document.getElementById('modal-overlay').classList.remove('hidden');
+        };
+
+        window.closeModal = () => {
+            document.getElementById('modal-overlay').classList.add('hidden');
+        };
+
+        // Custom Confirmation Modal Function
+        window.openConfirmationModal = (title, message, callback) => {
+            const confirmContent = `
+                <div class="modal-header">
+                    <h2>${title}</h2>
+                    <button class="modal-close-btn" onclick="closeModal()">×</button>
+                </div>
+                <p>${message}</p>
+                <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
+                    <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="closeModal(); ${callback}">Confirm</button>
+                </div>
+            `;
+            openModal(confirmContent);
+        };
+
         window.openCartModal = () => {
              const items = Object.keys(currentCart).map(id => ({...currentCart[id], id})).filter(item => item.quantity > 0);
             const totalPrice = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -923,7 +995,7 @@ const firebaseConfig = {
                             <span>${item.quantity} x ${formatCurrency(item.price)}</span>
                             <span style="font-weight: 700; min-width: 60px; text-align: right;">${formatCurrency(item.price * item.quantity)}</span>
                             <button class="btn" style="background: none; color: var(--primary-color); padding: 0;" onclick="updateCartItem('${item.id}', 0)">
-                                <span class="icon">Ã—</span>
+                                <span class="icon">×</span>
                             </button>
                         </div>
                     </div>
@@ -932,7 +1004,7 @@ const firebaseConfig = {
             openModal(`
                 <div class="modal-header">
                     <h2>Your Basket</h2>
-                    <button class="modal-close-btn" onclick="closeModal()">Ã—</button>
+                    <button class="modal-close-btn" onclick="closeModal()">×</button>
                 </div>
                 <div>${cartListHTML}</div>
                 ${items.length > 0 ? `
@@ -944,6 +1016,7 @@ const firebaseConfig = {
             `);
         };
         
+        // --- MODIFIED SUBMIT ORDER TO USE MAILTO: ---
         window.submitOrder = async () => {
             const form = document.getElementById('checkout-form');
             if (!form.checkValidity()) {
@@ -957,7 +1030,7 @@ const firebaseConfig = {
             const newOrder = {
                 userId: currentUser.uid,
                 userEmail: currentUser.email,
-                createdAt: serverTimestamp(),
+                createdAt: new Date().toISOString(), // Use JS date for email creation time
                 customer: {
                     name: document.getElementById('name').value,
                     phone: document.getElementById('phone').value,
@@ -969,37 +1042,87 @@ const firebaseConfig = {
                 status: "Submitted"
             };
 
+            const orderDetailsLines = newOrder.items.map(item => 
+                `${item.quantity} x ${item.name} | Unit Price: ${formatCurrency(item.price)} | Subtotal: ${formatCurrency(item.price * item.quantity)}`
+            );
+
+            // 1. Build the Email Body (using %0A for line breaks in mailto: protocol)
+            const nl = '%0A'; // URL-encoded newline
+            let emailBody = `
+Order Submitted: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}${nl}
+----------------------------------${nl}
+Customer: ${newOrder.customer.name}${nl}
+Contact Phone: ${newOrder.customer.phone}${nl}
+Contact Email: ${newOrder.userEmail}${nl}
+Delivery/Collection Note: ${newOrder.customer.address}${nl}
+Special Notes: ${newOrder.customer.notes || 'None'}${nl}
+${nl}
+--- ORDER ITEMS ---${nl}
+${orderDetailsLines.join(nl)}${nl}
+${nl}
+ORDER TOTAL: ${formatCurrency(newOrder.total)}
+----------------------------------${nl}
+NOTE: This order has also been saved to the Admin Panel database.
+            `.trim();
+            
+            const subject = `NEW BUTCHERS ORDER: ${newOrder.customer.name} - ${new Date().toLocaleDateString()}`;
+            
+            // 2. Save Order to Database (Admin & History still work)
             try {
-                await addDoc(collection(db, 'orders'), newOrder);
-                await setDoc(doc(db, 'carts', currentUser.uid), { items: {} });
+                // We use serverTimestamp for the database record
+                const dbOrder = { ...newOrder, createdAt: serverTimestamp() }; 
+
+                // Private data collection for user orders: /users/{uid}/orders
+                await addDoc(getUserCollectionRef('orders'), dbOrder);
+                
+                // Public collection for Admin view: /orders
+                await addDoc(getPublicCollectionRef('orders'), dbOrder);
+                
+                // 3. Clear the cart
+                const cartRef = doc(getUserCollectionRef('cart'), 'current');
+                await setDoc(cartRef, { items: {} });
+                
                 closeModal();
-                showToast('Order submitted successfully! We will be in touch shortly.');
+                
+                // 4. Trigger mailto link for immediate notification
+                const mailtoLink = `mailto:kwcbutchers@gmail.com?subject=${encodeURIComponent(subject)}&body=${emailBody}`;
+                
+                // Open mail client (this action replaces the email queue)
+                window.location.href = mailtoLink;
+
+                showToast('Order saved! Please check the email window that just opened and click "Send".');
             } catch (error) {
                 console.error("Error submitting order:", error);
-                showToast("Failed to submit order. Please try again.", true);
+                showToast("Failed to save order. Check console for database rules error.", true);
             }
         };
+        // --- END MODIFIED SUBMIT ORDER ---
         
-        const initApp = () => {
-             // NEW: Check if the Firebase config is still the placeholder
-            if (firebaseConfig.apiKey.startsWith("PASTE_YOUR")) {
+        const initApp = async () => {
+            if (isPlaceholderConfig) {
                 showLoadingError(
                     "Configuration Missing",
-                    "This application is not connected to Firebase. Please follow the instructions in the code to add your Firebase project's configuration object to the 'firebaseConfig' variable."
+                    `This application is not connected to a live database. Please replace the placeholder values in 'firebaseConfig' with your own project's credentials in the code.`
                 );
-                return; // Stop the app from initializing further
             }
-            
+
             try {
                 app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
+
+                // Sign in anonymously if not authenticated, allowing the user to view the shop and then sign in properly.
+                if (!auth.currentUser) {
+                    await signInAnonymously(auth);
+                }
+                
                 setupAuthListener();
+                
             } catch (e) {
                 console.error("Firebase initialization failed:", e);
                 showLoadingError(
                     "Initialization Failed",
-                    `Could not connect to Firebase services. Please check that your configuration is correct and that the services are enabled in your Firebase console. Error: ${e.message}`
+                    `Could not connect to Firebase services. Error: ${e.message}`
                 );
             }
         };
@@ -1007,15 +1130,6 @@ const firebaseConfig = {
         initApp();
         
         // --- Globally expose functions needed by HTML event handlers ---
-        window.openModal = (contentHTML) => {
-            document.getElementById('modal-content').innerHTML = contentHTML;
-            document.getElementById('modal-overlay').classList.remove('hidden');
-        };
-
-        window.closeModal = () => {
-            document.getElementById('modal-overlay').classList.add('hidden');
-        };
-        
         window.renderCategoryFilter = () => {
             categories = [...new Set(productData.map(p => p.category))].sort();
             const select = document.getElementById('category-filter');
@@ -1073,7 +1187,7 @@ const firebaseConfig = {
             const checkoutFormHTML = `
                 <div class="modal-header">
                     <h2>Checkout Details</h2>
-                    <button class="modal-close-btn" onclick="openCartModal()">â† Back to Basket</button>
+                    <button class="modal-close-btn" onclick="openCartModal()">← Back to Basket</button>
                 </div>
                 <form id="checkout-form" onsubmit="event.preventDefault(); submitOrder();">
                     <div class="form-group"><label for="name">Full Name</label><input type="text" id="name" required></div>
@@ -1089,7 +1203,7 @@ const firebaseConfig = {
         const listenForHistory = () => {
             if (!currentUser) return;
             if (unsubscribeHistory) unsubscribeHistory();
-            const q = query(collection(db, "orders"), where("userId", "==", currentUser.uid));
+            const q = getUserCollectionRef('orders');
             unsubscribeHistory = onSnapshot(q, (querySnapshot) => {
                 const history = [];
                 querySnapshot.forEach((doc) => {
@@ -1100,11 +1214,15 @@ const firebaseConfig = {
         };
         
         const renderHistory = (history) => {
-            history.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+            history.sort((a, b) => {
+                const dateA = a.createdAt ? a.createdAt.toMillis() : 0;
+                const dateB = b.createdAt ? b.createdAt.toMillis() : 0;
+                return dateB - dateA;
+            });
             
             let historyHTML = `
                 <h2 style="font-size: 1.75rem; margin-bottom: 1.5rem;">Your Order History</h2>
-                <button class="btn btn-secondary" onclick="changeView('products')">â† Back to Products</button>
+                <button class="btn btn-secondary" onclick="changeView('products')">← Back to Products</button>
                 <div class="order-card-grid" style="margin-top: 1.5rem;">
             `;
 
@@ -1112,9 +1230,10 @@ const firebaseConfig = {
                 historyHTML += '<p>You have no past orders.</p>';
             } else {
                 history.forEach(order => {
+                    const dateDisplay = order.createdAt ? order.createdAt.toDate().toLocaleDateString() : 'Date Unavailable';
                     historyHTML += `
                         <div class="order-card">
-                            <h3>Order Placed: ${order.createdAt.toDate().toLocaleDateString()}</h3>
+                            <h3>Order Placed: ${dateDisplay}</h3>
                             <p><strong>Status:</strong> ${order.status}</p>
                             <p><strong>Total:</strong> ${formatCurrency(order.total)}</p>
                             <button class="btn btn-secondary" style="margin-top: 0.5rem;" onclick="viewOrderDetail('${order.id}', false)">View Details</button>
@@ -1128,7 +1247,10 @@ const firebaseConfig = {
 
         window.viewOrderDetail = async (orderId, isAdminView = false) => {
             try {
-                const orderRef = doc(db, 'orders', orderId);
+                const orderRef = isAdminView 
+                    ? doc(getPublicCollectionRef('orders'), orderId)
+                    : doc(getUserCollectionRef('orders'), orderId);
+                    
                 const orderSnap = await getDoc(orderRef);
                 if (!orderSnap.exists()) return showToast("Order not found.", true);
                 
@@ -1143,7 +1265,7 @@ const firebaseConfig = {
                 openModal(`
                     <div class="modal-header">
                         <h2>Order Details</h2>
-                        <button class="modal-close-btn" onclick="closeModal()">Ã—</button>
+                        <button class="modal-close-btn" onclick="closeModal()">×</button>
                     </div>
                     <p><strong>Customer:</strong> ${order.customer.name}</p>
                     <p><strong>Contact:</strong> ${order.customer.phone} | ${order.userEmail}</p>
@@ -1155,19 +1277,24 @@ const firebaseConfig = {
                 `);
             } catch (error) {
                 console.error("Error fetching order details:", error);
-                showToast("Could not load order details.", true);
+                showToast("Could not load order details. Check console for database rules error.", true);
             }
         };
 
         // ADMIN FUNCTIONS
         window.renderAdminView = (subView) => {
+            if (!isAdmin) {
+                showToast("Access Denied: Admin privileges required.", true);
+                changeView('products');
+                return;
+            }
             const adminContainer = document.getElementById('admin-view');
             adminContainer.innerHTML = `
                 <div class="admin-header">
                     <h2 style="font-size: 1.75rem; margin:0;">Admin Dashboard</h2>
                 </div>
                 <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; border-bottom: 1px solid #ccc; padding-bottom: 1.5rem;">
-                    <button class="btn btn-primary" onclick="changeView('products')">â† Back to Shop</button>
+                    <button class="btn btn-primary" onclick="changeView('products')">← Back to Shop</button>
                     <button class="btn btn-secondary" onclick="renderAdminView('products')">Manage Products</button>
                     <button class="btn btn-secondary" onclick="renderAdminView('orders')">View Orders</button>
                 </div>
@@ -1209,7 +1336,7 @@ const firebaseConfig = {
         
         const listenForAdminOrders = () => {
             if (unsubscribeAdminOrders) unsubscribeAdminOrders();
-            const ordersRef = collection(db, "orders");
+            const ordersRef = getPublicCollectionRef('orders');
             unsubscribeAdminOrders = onSnapshot(ordersRef, (snapshot) => {
                 const allOrders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderAdminOrders(allOrders);
@@ -1217,11 +1344,16 @@ const firebaseConfig = {
         };
 
         const renderAdminOrders = (orders) => {
-            orders.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+            orders.sort((a, b) => {
+                const dateA = a.createdAt ? a.createdAt.toMillis() : 0;
+                const dateB = b.createdAt ? b.createdAt.toMillis() : 0;
+                return dateB - dateA;
+            });
+            
             const container = document.getElementById('admin-subview');
             let orderCards = orders.map(order => `
                 <div class="order-card">
-                    <h3>${order.customer.name} <span style="font-size:0.8rem;color:#666">(${order.createdAt.toDate().toLocaleString()})</span></h3>
+                    <h3>${order.customer.name} <span style="font-size:0.8rem;color:#666">(${order.createdAt ? order.createdAt.toDate().toLocaleString() : 'Date Unavailable'})</span></h3>
                     <p><strong>Contact:</strong> ${order.userEmail}</p>
                     <p><strong>Total:</strong> ${formatCurrency(order.total)}</p>
                     <p><strong>Status:</strong> ${order.status}</p>
@@ -1243,11 +1375,18 @@ const firebaseConfig = {
             const categoryOptions = categories.map(cat => `<option value="${cat}" ${cat === product.category ? 'selected' : ''}>${cat}</option>`).join('');
 
             openModal(`
-                <div class="modal-header"><h2>${isEdit ? 'Edit Product' : 'Add New Product'}</h2><button class="modal-close-btn" onclick="closeModal()">Ã—</button></div>
+                <div class="modal-header"><h2>${isEdit ? 'Edit Product' : 'Add New Product'}</h2><button class="modal-close-btn" onclick="closeModal()">×</button></div>
                 <form id="product-form" onsubmit="event.preventDefault(); submitProductForm('${productId}');">
                     <div class="form-group"><label>Product Name</label><input type="text" id="form-name" value="${product.name}" required></div>
-                    <div class="form-group"><label>Category</label><select id="form-category">${categoryOptions}</select><input type="text" id="new-category" placeholder="Or type a new category"></div>
-                    <div class="form-group"><label>Price (Â£)</label><input type="number" step="0.01" id="form-price" value="${product.price}" required></div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="form-category">
+                            <option value="">Select Existing Category</option>
+                            ${categoryOptions}
+                        </select>
+                        <input type="text" id="new-category" placeholder="Or type a new category">
+                    </div>
+                    <div class="form-group"><label>Price (£)</label><input type="number" step="0.01" id="form-price" value="${product.price}" required></div>
                     <button type="submit" class="btn btn-primary" style="width:100%">${isEdit ? 'Save Changes' : 'Add Product'}</button>
                 </form>
             `);
@@ -1256,38 +1395,47 @@ const firebaseConfig = {
         window.submitProductForm = async (productId) => {
             const isEdit = productId !== 'null';
             const name = document.getElementById('form-name').value.trim();
+            // Prioritize new category input, fallback to selected, then fail if empty
             let category = document.getElementById('new-category').value.trim() || document.getElementById('form-category').value;
             const price = parseFloat(document.getElementById('form-price').value);
 
             if (!name || !category || isNaN(price)) return showToast('Please fill all fields.', true);
             
             const productPayload = { name, category, price };
+            
+            const productsRef = getPublicCollectionRef('products');
 
             try {
                 if (isEdit) {
-                    await setDoc(doc(db, 'products', productId), productPayload);
+                    await setDoc(doc(productsRef, productId), productPayload);
                     showToast("Product updated.");
                 } else {
-                    // For adding, Firestore will generate an ID automatically
-                    await addDoc(collection(db, 'products'), productPayload);
+                    await addDoc(productsRef, productPayload);
                     showToast("Product added.");
                 }
                 closeModal();
             } catch (error) {
                 console.error("Error saving product:", error);
-                showToast("Could not save product.", true);
+                showToast("Could not save product. Check console for database rules error.", true);
             }
         };
 
         window.deleteProduct = async (productId) => {
-            if (confirm("Are you sure you want to delete this product? This cannot be undone.")) {
-                try {
-                    await deleteDoc(doc(db, 'products', productId));
-                    showToast("Product deleted.");
-                } catch (error) {
-                    console.error("Error deleting product:", error);
-                    showToast("Could not delete product.", true);
-                }
+            window.openConfirmationModal(
+                'Confirm Deletion', 
+                'Are you sure you want to delete this product? This action cannot be undone.', 
+                `performDeleteProduct('${productId}')`
+            );
+        };
+        
+        window.performDeleteProduct = async (productId) => {
+            try {
+                const productsRef = getPublicCollectionRef('products');
+                await deleteDoc(doc(productsRef, productId));
+                showToast("Product deleted.");
+            } catch (error) {
+                console.error("Error deleting product:", error);
+                showToast("Could not delete product. Check console for database rules error.", true);
             }
         };
 
